@@ -1,0 +1,11 @@
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS age INT,
+    ADD COLUMN IF NOT EXISTS gender VARCHAR(10);
+
+CREATE TABLE IF NOT EXISTS feature_clicks (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    feature_name VARCHAR(100) NOT NULL,
+    clicked_at TIMESTAMPTZ NOT NULL
+);
+

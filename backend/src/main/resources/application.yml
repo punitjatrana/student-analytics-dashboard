@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Interactive_Product
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: INFO
+
+jwt:
+  secret: "change-this-development-secret-key"
+  expiration-ms: 86400000
