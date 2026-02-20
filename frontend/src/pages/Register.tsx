@@ -2,7 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const API = 'https://student-analytics-api.onrender.com'
 
 const inputStyle = {
   width: '100%',
