@@ -10,12 +10,15 @@ export default function Login() {
   const [error, setError] = useState('')
   const [seedMsg, setSeedMsg] = useState('')
   const [seedError, setSeedError] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [seedLoading, setSeedLoading] = useState(false)
   const navigate = useNavigate()
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setSeedMsg('')
+    setLoading(true)
     try {
       const res = await axios.post(`${API}/api/auth/login`, { username, password })
       const token = res.data.token
@@ -23,6 +26,8 @@ export default function Login() {
       navigate('/dashboard')
     } catch {
       setError('Invalid username or password')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -30,6 +35,7 @@ export default function Login() {
     setError('')
     setSeedMsg('')
     setSeedError(false)
+    setSeedLoading(true)
     try {
       const res = await axios.post(`${API}/api/seed`)
       setSeedMsg(res.data?.message || res.data || 'Database seeded! Use user1 / password1')
@@ -37,14 +43,16 @@ export default function Login() {
       setSeedError(true)
       const msg = e?.response?.data?.message || e?.response?.data || e?.message || 'Request failed'
       const hint = (msg.includes('Network') || msg.includes('ECONNREFUSED') || msg.includes('Failed to fetch'))
-        ? ' Start the backend: run StudentmsApplication in STS, or run "mvn spring-boot:run" in the backend folder. Backend should run on port 8080.'
+        ? ' If local: run "mvn spring-boot:run" in the backend folder. If on the live site, the API may be starting—try again shortly.'
         : ''
       setSeedMsg(msg + hint)
+    } finally {
+      setSeedLoading(false)
     }
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh', padding: 16 }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh', padding: 16, position: 'relative', zIndex: 2 }}>
       <form
         onSubmit={submit}
         style={{
@@ -96,37 +104,39 @@ export default function Login() {
           )}
           <button
             type="submit"
+            disabled={loading}
             style={{
               marginTop: 8,
               padding: '8px 10px',
               borderRadius: 8,
               border: 'none',
-              background: '#4f46e5',
+              background: loading ? '#6b7280' : '#4f46e5',
               color: 'white',
               fontWeight: 500,
-              cursor: 'pointer'
+              cursor: loading ? 'wait' : 'pointer'
             }}
           >
-            Login
+            {loading ? 'Logging in…' : 'Login'}
           </button>
           <button
             type="button"
-            onClick={runSeed}
+            disabled={seedLoading}
+            onClick={(e) => { e.preventDefault(); runSeed() }}
             style={{
               padding: '8px 10px',
               borderRadius: 8,
               border: '1px solid #374151',
-              background: 'transparent',
+              background: seedLoading ? '#1f2937' : 'transparent',
               color: '#9ca3af',
-              cursor: 'pointer',
+              cursor: seedLoading ? 'wait' : 'pointer',
               fontSize: 13
             }}
           >
-            Seed database (create demo users)
+            {seedLoading ? 'Seeding…' : 'Seed database (create demo users)'}
           </button>
         </div>
         <p style={{ marginTop: 16, fontSize: 13, color: '#9ca3af' }}>
-          Don&apos;t have an account? <Link to="/register" style={{ color: '#60a5fa' }}>Register</Link>
+          Don&apos;t have an account? <Link to="/register" style={{ color: '#60a5fa', cursor: 'pointer' }}>Register</Link>
         </p>
       </form>
     </div>
